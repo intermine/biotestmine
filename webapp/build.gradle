@@ -14,9 +14,8 @@ sourceSets {
 }
 
 dependencies {
-    compile project(":dbmodel")
+    compile (project(":dbmodel")) {transitive = false}
     compile group: "org.intermine", name: "bio-core", version: imVersion
-    compile group: "org.intermine", name: "bio-model", version: imVersion
     compile group: "org.intermine", name: "intermine-api", version: imVersion
     compile group: "org.intermine", name: "intermine-webtasks", version: imVersion
     compile group: "javax.servlet", name: "jstl", version: "1.2"
