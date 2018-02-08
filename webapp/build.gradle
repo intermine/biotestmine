@@ -46,7 +46,7 @@ webappConfig {
 }
 
 war {
-    dependsOn 'mergeProperties', 'summariseObjectStore', 'unwarBioWebApp'
+    dependsOn 'mergeProperties','summariseObjectStore', 'unwarBioWebApp','addStrutsConfig'
     finalizedBy 'warWebApp'
 }
 
