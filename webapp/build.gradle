@@ -29,6 +29,7 @@ dependencies {
     runtime group: 'commons-codec', name: 'commons-codec', version: '1.9'
     runtime group: 'commons-httpclient', name: 'commons-httpclient', version: '3.0'
     runtime group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2'
+    runtime group: 'fastutil', name: 'fastutil', version: '5.0.9'
     runtime group: 'org.biojava', name: 'core', version: '1.9.1'
 }
 
