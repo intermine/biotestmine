@@ -3,6 +3,8 @@
 import argparse
 import subprocess
 
+import interminepy.project as imp
+
 
 # FUNCTIONS
 def run(cmd, _options):
@@ -17,8 +19,8 @@ def run(cmd, _options):
         exit(1)
 
 
-def integrate_source(source_name, _options):
-    run(['./gradlew', 'integrate', '-Psource=%s' % source_name, '--no-daemon'], _options)
+def integrate_source(_source, _options):
+    run(['./gradlew', 'integrate', '-Psource=%s' % _source.name, '--no-daemon'], _options)
 
 
 # MAIN
@@ -30,13 +32,14 @@ args = parser.parse_args()
 
 options = {'dry-run': args.dry_run}
 
-sources = ['uniprot-malaria', 'malaria-gff', 'malaria-chromosome-fasta', 'go', 'go-annotation', 'update-publications', 'entrez-organism']
+with open('project.xml') as f:
+    project = imp.Project(f)
 
 run(['./gradlew', 'buildDB'], options)
 run(['./gradlew', 'buildUserDB'], options)
 run(['./gradlew', 'loadDefaultTemplates'], options)
 
-for source in sources:
+for source in project.sources.values():
     integrate_source(source, options)
 
 run(['./gradlew', 'postprocess', '--no-daemon'], options)
