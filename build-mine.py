@@ -4,6 +4,7 @@ import argparse
 import os.path
 
 import jprops
+import psycopg2
 
 import interminepy.mine as imm
 import interminepy.project as imp
@@ -29,15 +30,25 @@ options = {'dry-run': args.dry_run}
 
 with open(args.mine_properties_path) as f:
     props = jprops.load_properties(f)
-    db_server_name = props['db.production.datasource.serverName']
+    db_host = props['db.production.datasource.serverName']
     db_name = props['db.production.datasource.databaseName']
     db_user = props['db.production.datasource.user']
     db_pass = props['db.production.datasource.password']
 
+print('Connecting to database with host=%s, dbname=%s, user=%s, password=(hidden)' % (db_host, db_name, db_user))
+
+conn = psycopg2.connect(host=db_host, dbname=db_name, user=db_user, password=db_pass)
+curs = conn.cursor()
+
 with open('project.xml') as f:
     project = imp.Project(f)
 
-imu.run(['./gradlew', 'buildDB'], options)
+cmd = ['./gradlew', 'buildDB']
+if not imm.is_builddb_run(curs):
+    imu.run(cmd, options)
+else:
+    print("Skipping '%s' as already detected run" % ' '.join(cmd))
+
 imu.run(['./gradlew', 'buildUserDB'], options)
 imu.run(['./gradlew', 'loadDefaultTemplates'], options)
 
@@ -45,5 +56,8 @@ for source in project.sources.values():
     imm.integrate_source(source, options)
 
 imu.run(['./gradlew', 'postprocess', '--no-daemon'], options)
+
+curs.close()
+conn.close()
 
 print('Finished. Now run "./gradlew tomcatStartWar"')
