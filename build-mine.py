@@ -2,34 +2,15 @@
 
 import argparse
 import os.path
-import subprocess
 
 import jprops
 
 import interminepy.project as imp
-
-
-# FUNCTIONS
-def check_path_exists(path):
-    if not os.path.exists(path):
-        print('Could not find %s. Exiting' % path)
-        exit(1)
-
-
-def run(cmd, _options):
-    print('Running:', ' '.join(cmd))
-
-    if _options['dry-run']:
-        return
-
-    rc = subprocess.call(cmd)
-    if rc != 0:
-        print('Command [%s] failed with rc %d' % (' '.join(cmd), rc))
-        exit(1)
+import interminepy.utils as imu
 
 
 def integrate_source(_source, _options):
-    run(['./gradlew', 'integrate', '-Psource=%s' % _source.name, '--no-daemon'], _options)
+    imu.run(['./gradlew', 'integrate', '-Psource=%s' % _source.name, '--no-daemon'], _options)
 
 
 # MAIN
@@ -45,23 +26,27 @@ if not os.path.exists(args.mine_properties_path):
     print('Could not find %s. Exiting' % args.mine_properties_path)
     exit(1)
 
-check_path_exists(args.mine_properties_path)
-check_path_exists('project.xml')
+imu.check_path_exists(args.mine_properties_path)
+imu.check_path_exists('project.xml')
 options = {'dry-run': args.dry_run}
 
 with open(args.mine_properties_path) as f:
     props = jprops.load_properties(f)
+    db_server_name = props['db.production.datasource.serverName']
+    db_name = props['db.production.datasource.databaseName']
+    db_user = props['db.production.datasource.user']
+    db_pass = props['db.production.datasource.password']
 
 with open('project.xml') as f:
     project = imp.Project(f)
 
-run(['./gradlew', 'buildDB'], options)
-run(['./gradlew', 'buildUserDB'], options)
-run(['./gradlew', 'loadDefaultTemplates'], options)
+imu.run(['./gradlew', 'buildDB'], options)
+imu.run(['./gradlew', 'buildUserDB'], options)
+imu.run(['./gradlew', 'loadDefaultTemplates'], options)
 
 for source in project.sources.values():
     integrate_source(source, options)
 
-run(['./gradlew', 'postprocess', '--no-daemon'], options)
+imu.run(['./gradlew', 'postprocess', '--no-daemon'], options)
 
 print('Finished. Now run "./gradlew tomcatStartWar"')
