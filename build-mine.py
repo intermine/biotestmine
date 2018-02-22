@@ -28,17 +28,12 @@ imu.check_path_exists(args.mine_properties_path)
 imu.check_path_exists('project.xml')
 options = {'dry-run': args.dry_run}
 
-with open(args.mine_properties_path) as f:
-    props = jprops.load_properties(f)
-    db_host = props['db.production.datasource.serverName']
-    db_name = props['db.production.datasource.databaseName']
-    db_user = props['db.production.datasource.user']
-    db_pass = props['db.production.datasource.password']
+db_config = imm.get_db_config(args.mine_properties_path, 'production')
+user_db_config = imm.get_db_config(args.mine_properties_path, 'userprofile-production')
 
-print('Connecting to database with host=%s, dbname=%s, user=%s, password=(hidden)' % (db_host, db_name, db_user))
+conn, curs = imu.connect_to_db(db_config)
+user_conn, user_curs = imu.connect_to_db(user_db_config)
 
-conn = psycopg2.connect(host=db_host, dbname=db_name, user=db_user, password=db_pass)
-curs = conn.cursor()
 
 with open('project.xml') as f:
     project = imp.Project(f)
@@ -49,7 +44,12 @@ if not imm.is_builddb_run(curs):
 else:
     print("Skipping '%s' as already detected run" % ' '.join(cmd))
 
-imu.run(['./gradlew', 'buildUserDB'], options)
+cmd = ['./gradlew', 'buildUserDB']
+if not imm.is_builddb_run(user_curs):
+    imu.run(cmd, options)
+else:
+    print("Skipping '%s' as already detected run" % ' '.join(cmd))
+
 imu.run(['./gradlew', 'loadDefaultTemplates'], options)
 
 for source in project.sources.values():
@@ -57,6 +57,8 @@ for source in project.sources.values():
 
 imu.run(['./gradlew', 'postprocess', '--no-daemon'], options)
 
+user_curs.close()
+user_conn.close()
 curs.close()
 conn.close()
 
