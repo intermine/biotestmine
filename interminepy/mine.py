@@ -2,7 +2,7 @@ import interminepy.utils as imu
 
 
 def is_builddb_run(curs):
-    curs.execute("SELECT 'intermineobject'::regclass")
+    curs.execute("SELECT 'intermine_metadata'::regclass")
     return curs.rowcount != 0
 
 
