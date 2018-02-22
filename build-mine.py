@@ -5,12 +5,9 @@ import os.path
 
 import jprops
 
+import interminepy.mine as imm
 import interminepy.project as imp
 import interminepy.utils as imu
-
-
-def integrate_source(_source, _options):
-    imu.run(['./gradlew', 'integrate', '-Psource=%s' % _source.name, '--no-daemon'], _options)
 
 
 # MAIN
@@ -45,7 +42,7 @@ imu.run(['./gradlew', 'buildUserDB'], options)
 imu.run(['./gradlew', 'loadDefaultTemplates'], options)
 
 for source in project.sources.values():
-    integrate_source(source, options)
+    imm.integrate_source(source, options)
 
 imu.run(['./gradlew', 'postprocess', '--no-daemon'], options)
 
