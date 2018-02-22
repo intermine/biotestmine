@@ -9,13 +9,27 @@ import interminepy.utils as imu
 
 # MAIN
 parser = argparse.ArgumentParser('Build the mine')
+
+parser.add_argument(
+    'mine_properties_path', help="path to the mine's properties file, e.g. ~/.intermine/biotestmine.properties")
+
+parser.add_argument(
+    'checkpoint_path',
+    help='The directory in which to place database checkpoint dumps when the dump="true" flag is set in the <source>'
+         ' entry of the project.xml')
+
 parser.add_argument(
     '--dry-run', action='store_true', default=False,
     help='Don''t actually build anything, just show the commands that would be executed')
+
 args = parser.parse_args()
 
+imu.check_path_exists(args.mine_properties_path)
+imu.check_path_exists(args.checkpoint_path)
 imu.check_path_exists('project.xml')
+
 options = {'dry-run': args.dry_run}
+db_config = imm.get_db_config(args.mine_properties_path, 'production')
 
 imu.run(['./gradlew', 'buildDB'], options)
 imu.run(['./gradlew', 'buildUserDB'], options)
@@ -25,7 +39,7 @@ with open('project.xml') as f:
     project = imp.Project(f)
 
 for source in project.sources.values():
-    imm.integrate_source(source, options)
+    imm.integrate_source(source, db_config, args.checkpoint_path, options)
 
 imu.run(['./gradlew', 'postprocess', '--no-daemon'], options)
 

@@ -8,10 +8,10 @@ def check_path_exists(path):
         exit(1)
 
 
-def run(cmd, _options):
+def run(cmd, options={}):
     print('Running:', ' '.join(cmd))
 
-    if _options['dry-run']:
+    if options['dry-run']:
         return
 
     rc = subprocess.call(cmd)
