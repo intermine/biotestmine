@@ -4,11 +4,11 @@ from lxml import etree
 
 
 class Project:
-    def __init__(self, input):
+    def __init__(self, _input):
         self.sources = collections.OrderedDict()
 
         parser = etree.XMLParser(remove_blank_text=True)
-        self._projectTree = etree.parse(input, parser)
+        self._projectTree = etree.parse(_input, parser)
 
         for source_elem in self._projectTree.xpath('/project/sources/source'):
             self.sources[source_elem.attrib['name']] = Source(source_elem)
