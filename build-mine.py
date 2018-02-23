@@ -34,7 +34,6 @@ imu.check_path_exists(args.checkpoint_path)
 imu.check_path_exists('project.xml')
 
 options = {'dry-run': args.dry_run}
-db_config = imm.get_db_config(args.mine_properties_path, 'production')
 
 imu.run(['./gradlew', 'buildDB'], options)
 imu.run(['./gradlew', 'buildUserDB'], options)
@@ -42,6 +41,8 @@ imu.run(['./gradlew', 'loadDefaultTemplates'], options)
 
 with open('project.xml') as f:
     project = imp.Project(f)
+
+db_config = imm.get_db_config(args.mine_properties_path, 'production')
 
 for source in project.sources.values():
     imm.integrate_source(source, db_config, args.checkpoint_path, options)
