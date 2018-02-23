@@ -18,7 +18,10 @@ def get_db_config(props_path, db_type):
     return config
 
 
-def integrate_source(source, db_config, checkpoint_path, options={}):
+def integrate_source(source, db_config, checkpoint_path, options=None):
+    if options is None:
+        options = {}
+
     imu.run(['./gradlew', 'integrate', '-Psource=%s' % source.name, '--no-daemon'], options)
 
     if source.dump:
