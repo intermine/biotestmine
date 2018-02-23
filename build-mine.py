@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import argparse
+import coloredlogs
+import logging
 
 import interminepy.mine as imm
 import interminepy.project as imp
@@ -8,6 +10,9 @@ import interminepy.utils as imu
 
 
 # MAIN
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG')
+
 parser = argparse.ArgumentParser('Build the mine')
 
 parser.add_argument(
@@ -43,4 +48,4 @@ for source in project.sources.values():
 
 imu.run(['./gradlew', 'postprocess', '--no-daemon'], options)
 
-print('Finished. Now run "./gradlew tomcatStartWar"')
+logger.info('Finished. Now run "./gradlew tomcatStartWar"')

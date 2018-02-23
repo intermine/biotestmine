@@ -1,8 +1,12 @@
 import os.path
 
 import jprops
+import logging
 
 import interminepy.utils as imu
+
+
+logger = logging.getLogger('interminepy')
 
 
 def get_db_config(props_path, db_type):
@@ -25,7 +29,7 @@ def integrate_source(source, db_config, checkpoint_path, options=None):
     imu.run(['./gradlew', 'integrate', '-Psource=%s' % source.name, '--no-daemon'], options)
 
     if source.dump:
-        print('Checkpoint dumping at source %s', source.name)
+        logger.info('Checkpoint dumping at source %s', source.name)
 
         imu.run(
             ['pg_dump',
