@@ -15,7 +15,7 @@ def check_path_exists(path):
 def run(cmd, options):
     rc = run_return_rc(cmd, options)
     if rc != 0:
-        logging.error('Command [%s] failed with rc %d' % (' '.join(cmd), rc))
+        logging.error('Command [%s] failed with rc %d', ' '.join(cmd), rc)
         exit(1)
 
 
@@ -28,7 +28,7 @@ def run_return_rc(cmd, options):
     logger.info('Running: %s', raw_cmd)
 
     if options['dry-run']:
-        return
+        return 0
 
     return subprocess.call(cmd, shell=options['run-in-shell'])
 

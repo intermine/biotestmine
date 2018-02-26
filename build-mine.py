@@ -19,19 +19,20 @@ parser = argparse.ArgumentParser('Build the mine')
 parser.add_argument(
     'mine_properties_path', help="path to the mine's properties file, e.g. ~/.intermine/biotestmine.properties")
 
-parser.add_argument(
-    'checkpoints_path',
-    help='The directory in which to place database checkpoint dumps when the dump="true" flag is set in the <source>'
-         ' entry of the project.xml')
+parser.add_argument('-c', '--checkpoints-location', help='The location for reading/writing database checkpoints')
 
 parser.add_argument(
     '--dry-run', action='store_true', default=False,
     help='Don''t actually build anything, just show the commands that would be executed')
 
 args = parser.parse_args()
+print(args)
+if args.checkpoints_location is None:
+    logger.info('No checkpoints location. Exiting')
+    exit(0)
 
 imu.check_path_exists(args.mine_properties_path)
-imu.check_path_exists(args.checkpoints_path)
+imu.check_path_exists(args.checkpoints_location)
 imu.check_path_exists('project.xml')
 
 options = {'dry-run': args.dry_run, 'run-in-shell': False}
@@ -52,7 +53,7 @@ if imu.run_return_rc(
 
 imu.run_on_db(['createdb', '-E', 'UTF8', db_config['name']], db_config, options)
 
-last_checkpoint_path = imm.get_last_checkpoint_path(project, args.checkpoints_path)
+last_checkpoint_path = imm.get_last_checkpoint_path(project, args.checkpoints_location)
 if last_checkpoint_path is not None:
     logger.info('Restoring from last found checkpoint %s', last_checkpoint_path)
 
@@ -67,7 +68,7 @@ if last_checkpoint_path is not None:
     if next_source_index < len(sources):
         keys = keys[next_source_index:]
         for source_name in keys:
-            imm.integrate_source(sources[source_name], db_config, args.checkpoints_path, options)
+            imm.integrate_source(sources[source_name], db_config, args.checkpoints_location, options)
 
 else:
     logger.info('No previous checkpoint found, starting build from the beginning')
