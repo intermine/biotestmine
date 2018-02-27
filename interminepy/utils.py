@@ -34,6 +34,22 @@ def run_return_rc(cmd, options):
 
 
 def run_on_db(cmd, db_config, options):
-
-    access_db_params = ['-U', db_config['user'], '-h', db_config['host']]
+    access_db_params = ['-U', db_config['production.user'], '-h', db_config['production.host']]
     run(cmd + access_db_params, options)
+
+
+def pg_terminate_backends(db_config, options):
+    for type_ in 'production', 'common-tgt-items', 'userprofile-production':
+        pg_terminate_backend(db_config, type_, options)
+
+
+def pg_terminate_backend(db_config, type_, options):
+    run_on_db(
+        ['psql',
+         '-P', 'pager=off',
+         '-q',
+         '-o', '/dev/null',
+         '-c', 'SELECT pg_terminate_backend(pg_stat_activity.pid)'
+               ' FROM pg_stat_activity '
+               ' WHERE datname = current_database()'
+               ' AND pid <> pg_backend_pid();', db_config['%s.name' % type_]], db_config, options)
