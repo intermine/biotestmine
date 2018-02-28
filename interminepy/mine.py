@@ -29,13 +29,12 @@ def get_last_checkpoint_db_name(project, db_config, options):
 
 
 def get_last_checkpoint_path(project, checkpoint_path):
-    last_checkpoint_path = None
-    for source in project.sources.values():
+    for source in reversed(project.sources.values()):
         path = os.path.join(checkpoint_path, make_checkpoint_filename(source))
         if os.path.isfile(path):
-            last_checkpoint_path = path
+            return path
 
-    return last_checkpoint_path
+    return None
 
 
 def integrate_source(source, db_config, checkpoint_location, options):
