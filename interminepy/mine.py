@@ -8,7 +8,7 @@ import interminepy.utils as imu
 
 logger = logging.getLogger('interminepy')
 
-DATABASE_CHECKPOINT_LOCATION_CONST = ':database:'
+DATABASE_CHECKPOINT_LOCATION = ':database:'
 
 
 def get_db_config(props_path, db_type):
@@ -40,7 +40,7 @@ def integrate_source(source, db_config, checkpoint_location, options):
     if source.dump:
         logger.info('Checkpoint dumping at source %s', source.name)
 
-        if checkpoint_location == DATABASE_CHECKPOINT_LOCATION_CONST:
+        if checkpoint_location == DATABASE_CHECKPOINT_LOCATION:
             # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
             imu.pg_terminate_backend(db_config, options)
 

@@ -25,7 +25,7 @@ parser.add_argument(
 parser.add_argument(
     '-c', '--checkpoints-location',
     help='The location for reading/writing database checkpoints',
-    default=imm.DATABASE_CHECKPOINT_LOCATION_CONST)
+    default=imm.DATABASE_CHECKPOINT_LOCATION)
 
 parser.add_argument(
     '--dry-run', action='store_true', default=False,
@@ -39,7 +39,7 @@ if args.checkpoints_location is None:
 
 imu.check_path_exists(args.mine_properties_path)
 
-if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION_CONST:
+if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
     imu.check_path_exists(args.checkpoints_location)
 
 imu.check_path_exists('project.xml')
@@ -57,7 +57,7 @@ db_configs = {'production': imm.get_db_config(args.mine_properties_path, 'produc
 imu.drop_db_if_exists(db_configs['production'], options)
 imu.run_on_db(['createdb', '-E', 'UTF8', db_configs['production']['name']], db_configs['production'], options)
 
-if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION_CONST:
+if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
     last_checkpoint_location = imm.get_last_checkpoint_path(project, args.checkpoints_location)
 
     if last_checkpoint_location is not None:
