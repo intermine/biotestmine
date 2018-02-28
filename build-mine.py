@@ -4,6 +4,7 @@ import argparse
 import logging
 
 import coloredlogs
+import jprops
 
 import interminepy.mine as imm
 import interminepy.project as imp
@@ -52,7 +53,12 @@ with open('project.xml') as f:
 for source_name in project.sources:
     logger.debug('Found source %s in project.xml', source_name)
 
-db_configs = {'production': imm.get_db_config(args.mine_properties_path, 'production')}
+with open(args.mine_properties_path) as f:
+    mine_java_properties = jprops.load_properties(f)
+
+db_configs = {}
+for type_ in 'production', 'common-tgt-items', 'userprofile-production':
+    db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
 imu.drop_db_if_exists(db_configs['production'], options)
 imu.run_on_db(['createdb', '-E', 'UTF8', db_configs['production']['name']], db_configs['production'], options)

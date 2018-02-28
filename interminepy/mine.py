@@ -11,17 +11,13 @@ logger = logging.getLogger('interminepy')
 DATABASE_CHECKPOINT_LOCATION = ':database:'
 
 
-def get_db_config(props_path, db_type):
-    config = {}
-
-    with open(props_path) as f:
-        props = jprops.load_properties(f)
-        config['host'] = props['db.%s.datasource.serverName' % db_type]
-        config['name'] = props['db.%s.datasource.databaseName' % db_type]
-        config['user'] = props['db.%s.datasource.user' % db_type]
-        config['pass'] = props['db.%s.datasource.password' % db_type]
-
-    return config
+def get_db_config(props, db_type):
+    return {
+        'host': props['db.%s.datasource.serverName' % db_type],
+        'name': props['db.%s.datasource.databaseName' % db_type],
+        'user': props['db.%s.datasource.user' % db_type],
+        'pass': props['db.%s.datasource.password' % db_type]
+    }
 
 
 def get_last_checkpoint_path(project, checkpoint_path):
