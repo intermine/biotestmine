@@ -19,6 +19,15 @@ def get_db_config(props, db_type):
     }
 
 
+def get_last_checkpoint_db_name(project, db_config, options):
+    for source in reversed(list(project.sources.values())):
+        db_name = make_checkpoint_db_name(db_config, source)
+        if imu.does_db_exist(db_name, options):
+            return db_name
+
+    return None
+
+
 def get_last_checkpoint_path(project, checkpoint_path):
     last_checkpoint_path = None
     for source in project.sources.values():
@@ -38,10 +47,7 @@ def integrate_source(source, db_config, checkpoint_location, options):
         if checkpoint_location == DATABASE_CHECKPOINT_LOCATION:
             # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
             imu.pg_terminate_backend(db_config, options)
-
-            imu.run_on_db(
-                ['createdb', '-T', db_config['name'], make_checkpoint_db_name(db_config, source)],
-                db_config, options)
+            imu.copy_db(db_config['name'], make_checkpoint_db_name(db_config, source))
         else:
             imu.run_on_db(
                 ['pg_dump',
@@ -54,6 +60,10 @@ def integrate_source(source, db_config, checkpoint_location, options):
 
 def make_checkpoint_db_name(db_config, source):
     return '%s:%s' % (db_config['name'], source.name)
+
+
+def split_checkpoint_db_name(name):
+    return name.split(':')
 
 
 def make_checkpoint_path(checkpoint_path, source):
