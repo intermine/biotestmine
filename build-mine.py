@@ -61,8 +61,7 @@ for type_ in 'production', 'common-tgt-items', 'userprofile-production':
     db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
 if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
-    imu.drop_db_if_exists(db_configs['production'], options)
-    imu.create_db(db_configs['production'], options)
+    imu.wipe_db(db_configs['production'])
 
     last_checkpoint_location = imm.get_last_checkpoint_path(project, args.checkpoints_location)
 
@@ -87,8 +86,7 @@ else:
         logger.info('Resuming after source %s', source_name)
         next_source_index = list(project.sources.keys()).index(source_name) + 1
     else:
-        imu.drop_db_if_exists(db_configs['production'], options)
-        imu.create_db(db_configs['production'], options)
+        imu.wipe_db(db_configs['production'])
         next_source_index = 0
 
 if next_source_index <= 0:

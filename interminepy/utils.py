@@ -44,6 +44,18 @@ def drop_db_if_exists(db_config, options):
         run_on_db(['dropdb', db_config['name']], db_config, options)
 
 
+def wipe_db(db_config, options):
+    """
+    Drop and recreate a blank database
+
+    :param db_config:
+    :param options:
+    :return:
+    """
+    drop_db_if_exists(db_config, options)
+    create_db(db_config, options)
+
+
 def restore_db(db_config, checkpoint_path, options):
     run_on_db(
         ['pg_restore', '-1', '-d', db_config['name'], checkpoint_path],
