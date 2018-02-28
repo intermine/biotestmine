@@ -1,6 +1,5 @@
 import os.path
 
-import jprops
 import logging
 
 import interminepy.utils as imu
