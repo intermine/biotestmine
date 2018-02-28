@@ -59,10 +59,10 @@ db_configs = {}
 for type_ in 'production', 'common-tgt-items', 'userprofile-production':
     db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
-if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
-    next_source_index = imm.restore_cp_from_fs(project, args.checkpoint_location, db_configs['production'], options)
-else:
+if args.checkpoints_location == imm.DATABASE_CHECKPOINT_LOCATION:
     next_source_index = imm.restore_cp_from_db(project, db_configs['production'], options)
+else:
+    next_source_index = imm.restore_cp_from_fs(project, args.checkpoint_location, db_configs['production'], options)
 
 if next_source_index <= 0:
     logger.info('No previous checkpoint found, starting build from the beginning')
