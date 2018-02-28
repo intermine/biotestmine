@@ -62,7 +62,7 @@ for type_ in 'production', 'common-tgt-items', 'userprofile-production':
 if args.checkpoints_location == imm.DATABASE_CHECKPOINT_LOCATION:
     next_source_index = imm.restore_cp_from_db(project, db_configs['production'], options)
 else:
-    next_source_index = imm.restore_cp_from_fs(project, args.checkpoint_location, db_configs['production'], options)
+    next_source_index = imm.restore_cp_from_fs(project, args.checkpoints_location, db_configs['production'], options)
 
 if next_source_index <= 0:
     logger.info('No previous checkpoint found, starting build from the beginning')
@@ -71,11 +71,7 @@ if next_source_index <= 0:
     imu.run(['./gradlew', 'loadDefaultTemplates', '--stacktrace', '--no-daemon'], options)
 
 if next_source_index < len(project.sources):
-    source_names = list(project.sources.keys())[next_source_index:]
-    for source_name in source_names:
-        # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-        imu.pg_terminate_backends(db_configs, options)
-        imm.integrate_source(project.sources[source_name], db_configs['production'], args.checkpoints_location, options)
+    imm.integrate_sources_from_index(project, next_source_index, args.checkpoints_location, db_configs, options)
 
 # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
 imu.pg_terminate_backends(db_configs, options)

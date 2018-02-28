@@ -37,26 +37,6 @@ def get_last_checkpoint_path(project, checkpoint_path):
     return None
 
 
-def integrate_source(source, db_config, checkpoint_location, options):
-    imu.run(['./gradlew', 'integrate', '-Psource=%s' % source.name, '--stacktrace', '--no-daemon'], options)
-
-    if source.dump:
-        logger.info('Checkpoint dumping at source %s', source.name)
-
-        if checkpoint_location == DATABASE_CHECKPOINT_LOCATION:
-            # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-            imu.pg_terminate_backend(db_config, options)
-            imu.copy_db(db_config['name'], make_checkpoint_db_name(db_config, source))
-        else:
-            imu.run_on_db(
-                ['pg_dump',
-                    '-Fc',
-                    '-f', make_checkpoint_path(checkpoint_location, source),
-                    db_config['name']],
-                db_config,
-                options)
-
-
 def make_checkpoint_db_name(db_config, source):
     return '%s:%s' % (db_config['name'], source.name)
 
@@ -139,3 +119,31 @@ def restore_cp_from_fs(project, checkpoints_path, db_config, options):
         return list(project.sources.keys()).index(source_name) + 1
     else:
         return 0
+
+
+def integrate_sources_from_index(project, index, checkpoints_location, db_configs, options):
+    source_names = list(project.sources.keys())[index:]
+    for source_name in source_names:
+        # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
+        imu.pg_terminate_backends(db_configs, options)
+        integrate_source(project.sources[source_name], db_configs['production'], checkpoints_location, options)
+
+
+def integrate_source(source, db_config, checkpoint_location, options):
+    imu.run(['./gradlew', 'integrate', '-Psource=%s' % source.name, '--stacktrace', '--no-daemon'], options)
+
+    if source.dump:
+        logger.info('Checkpoint dumping at source %s', source.name)
+
+        if checkpoint_location == DATABASE_CHECKPOINT_LOCATION:
+            # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
+            imu.pg_terminate_backend(db_config, options)
+            imu.copy_db(db_config['name'], make_checkpoint_db_name(db_config, source), db_config, options)
+        else:
+            imu.run_on_db(
+                ['pg_dump',
+                 '-Fc',
+                 '-f', make_checkpoint_path(checkpoint_location, source),
+                 db_config['name']],
+                db_config,
+                options)

@@ -10,7 +10,7 @@ def does_db_exist(db_name, options):
     """
     Check if the database given in the config exists
 
-    :param db_config:
+    :param db_name:
     :param options:
     :return: true if it exists, false if not
     """
