@@ -69,9 +69,7 @@ if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
     if last_checkpoint_location is not None:
         logger.info('Restoring from last found checkpoint %s', last_checkpoint_location)
 
-        imu.run_on_db(
-            ['pg_restore', '-1', '-d', db_configs['production']['name'], last_checkpoint_location],
-            db_configs['production'], options)
+        imu.restore_db(db_configs['production'], last_checkpoint_location, options)
 
         source_name = imm.split_checkpoint_path(last_checkpoint_location)[2]
         logger.info('Resuming after source %s', source_name)
