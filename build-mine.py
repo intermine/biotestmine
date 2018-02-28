@@ -10,6 +10,9 @@ import interminepy.project as imp
 import interminepy.utils as imu
 
 
+# When changing this code, please make sure it conforms to Python PEP8 style guidelines.  JetBrains pycharm is one IDE
+# that will show whether code is in compliance.
+
 # MAIN
 logger = logging.getLogger('build-mine.py')
 coloredlogs.install(level='DEBUG')
