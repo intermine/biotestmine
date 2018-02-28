@@ -11,24 +11,15 @@ logger = logging.getLogger('interminepy')
 DATABASE_CHECKPOINT_LOCATION_CONST = ':database:'
 
 
-def get_db_config(props_path):
-    config = {}
-
-    for type_ in 'production', 'common-tgt-items', 'userprofile-production':
-        config.update(get_db_config_for_type(props_path, type_))
-
-    return config
-
-
-def get_db_config_for_type(props_path, db_type):
+def get_db_config(props_path, db_type):
     config = {}
 
     with open(props_path) as f:
         props = jprops.load_properties(f)
-        config['%s.host' % db_type] = props['db.%s.datasource.serverName' % db_type]
-        config['%s.name' % db_type] = props['db.%s.datasource.databaseName' % db_type]
-        config['%s.user' % db_type] = props['db.%s.datasource.user' % db_type]
-        config['%s.pass' % db_type] = props['db.%s.datasource.password' % db_type]
+        config['host'] = props['db.%s.datasource.serverName' % db_type]
+        config['name'] = props['db.%s.datasource.databaseName' % db_type]
+        config['user'] = props['db.%s.datasource.user' % db_type]
+        config['pass'] = props['db.%s.datasource.password' % db_type]
 
     return config
 
@@ -44,9 +35,6 @@ def get_last_checkpoint_path(project, checkpoint_path):
 
 
 def integrate_source(source, db_config, checkpoint_location, options):
-    # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-    imu.pg_terminate_backends(db_config, options)
-
     imu.run(['./gradlew', 'integrate', '-Psource=%s' % source.name, '--stacktrace', '--no-daemon'], options)
 
     if source.dump:
@@ -54,23 +42,23 @@ def integrate_source(source, db_config, checkpoint_location, options):
 
         if checkpoint_location == DATABASE_CHECKPOINT_LOCATION_CONST:
             # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-            imu.pg_terminate_backends(db_config, options)
+            imu.pg_terminate_backend(db_config, options)
 
             imu.run_on_db(
-                ['createdb', '-T', db_config['production.name'], make_checkpoint_db_name(db_config, source)],
+                ['createdb', '-T', db_config['name'], make_checkpoint_db_name(db_config, source)],
                 db_config, options)
         else:
             imu.run_on_db(
                 ['pg_dump',
                     '-Fc',
                     '-f', make_checkpoint_path(checkpoint_location, source),
-                    db_config['production.name']],
+                    db_config['name']],
                 db_config,
                 options)
 
 
 def make_checkpoint_db_name(db_config, source):
-    return '%s:%s' % (db_config['production.name'], source.name)
+    return '%s:%s' % (db_config['name'], source.name)
 
 
 def make_checkpoint_path(checkpoint_path, source):

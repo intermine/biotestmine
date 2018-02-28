@@ -52,10 +52,10 @@ with open('project.xml') as f:
 for source_name in project.sources:
     logger.debug('Found source %s in project.xml', source_name)
 
-db_config = imm.get_db_config(args.mine_properties_path)
+db_configs = {'production': imm.get_db_config(args.mine_properties_path, 'production')}
 
-imu.drop_db_if_exists(db_config, options)
-imu.run_on_db(['createdb', '-E', 'UTF8', db_config['production.name']], db_config, options)
+imu.drop_db_if_exists(db_configs['production'], options)
+imu.run_on_db(['createdb', '-E', 'UTF8', db_configs['production']['name']], db_configs['production'], options)
 
 if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION_CONST:
     last_checkpoint_location = imm.get_last_checkpoint_path(project, args.checkpoints_location)
@@ -64,7 +64,8 @@ if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION_CONST:
         logger.info('Restoring from last found checkpoint %s', last_checkpoint_location)
 
         imu.run_on_db(
-            ['pg_restore', '-1', '-d', db_config['production.name'], last_checkpoint_location], db_config, options)
+            ['pg_restore', '-1', '-d', db_configs['production']['name'], last_checkpoint_location],
+            db_configs['production'], options)
 
         source_name = imm.split_checkpoint_path(last_checkpoint_location)[2]
         logger.info('Resuming after source %s', source_name)
@@ -84,10 +85,12 @@ if next_source_index <= 0:
 if next_source_index < len(project.sources):
     source_names = list(project.sources.keys())[next_source_index:]
     for source_name in source_names:
-        imm.integrate_source(project.sources[source_name], db_config, args.checkpoints_location, options)
+        # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
+        imu.pg_terminate_backends(db_configs, options)
+        imm.integrate_source(project.sources[source_name], db_configs['production'], args.checkpoints_location, options)
 
 # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-imu.pg_terminate_backends(db_config, options)
+imu.pg_terminate_backends(db_configs, options)
 imu.run(['./gradlew', 'postprocess', '--no-daemon', '--stacktrace'], options)
 
 logger.info('Finished. Now run "./gradlew tomcatStartWar"')
