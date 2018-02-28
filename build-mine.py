@@ -74,10 +74,9 @@ else:
 
 if next_source_index <= 0:
     logger.info('No previous checkpoint found, starting build from the beginning')
-
-    imu.run(['./gradlew', 'buildDB', '--no-daemon'], options)
-    imu.run(['./gradlew', 'buildUserDB', '--no-daemon'], options)
-    imu.run(['./gradlew', 'loadDefaultTemplates', '--no-daemon'], options)
+    imu.run(['./gradlew', 'buildDB', '--stacktrace', '--no-daemon'], options)
+    imu.run(['./gradlew', 'buildUserDB', '--stacktrace', '--no-daemon'], options)
+    imu.run(['./gradlew', 'loadDefaultTemplates', '--stacktrace', '--no-daemon'], options)
 
 if next_source_index < len(project.sources):
     source_names = list(project.sources.keys())[next_source_index:]
