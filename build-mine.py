@@ -42,7 +42,6 @@ imu.check_path_exists(args.mine_properties_path)
 
 if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
     imu.check_path_exists(args.checkpoints_location)
-
 imu.check_path_exists('project.xml')
 
 options = {'dry-run': args.dry_run, 'run-in-shell': False}
@@ -61,33 +60,9 @@ for type_ in 'production', 'common-tgt-items', 'userprofile-production':
     db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
 if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
-    imu.wipe_db(db_configs['production'])
-
-    last_checkpoint_location = imm.get_last_checkpoint_path(project, args.checkpoints_location)
-
-    if last_checkpoint_location is not None:
-        logger.info('Restoring from last found checkpoint %s', last_checkpoint_location)
-        imu.restore_db(db_configs['production'], last_checkpoint_location, options)
-
-        source_name = imm.split_checkpoint_path(last_checkpoint_location)[2]
-        logger.info('Resuming after source %s', source_name)
-        next_source_index = list(project.sources.keys()).index(source_name) + 1
-    else:
-        next_source_index = 0
+    next_source_index = imm.restore_cp_from_fs(project, args.checkpoint_location, db_configs['production'], options)
 else:
-    last_checkpoint_db_name = imm.get_last_checkpoint_db_name(project, db_configs['production'], options)
-
-    if last_checkpoint_db_name is not None:
-        logger.info('Restoring from last found checkpoint database %s', last_checkpoint_db_name)
-        imu.drop_db_if_exists(db_configs['production'], options)
-        imu.copy_db(last_checkpoint_db_name, db_configs['production']['name'], db_configs['production'], options)
-
-        source_name = imm.split_checkpoint_db_name(last_checkpoint_db_name)[1]
-        logger.info('Resuming after source %s', source_name)
-        next_source_index = list(project.sources.keys()).index(source_name) + 1
-    else:
-        imu.wipe_db(db_configs['production'])
-        next_source_index = 0
+    next_source_index = imm.restore_cp_from_db(project, db_configs['production'], options)
 
 if next_source_index <= 0:
     logger.info('No previous checkpoint found, starting build from the beginning')

@@ -96,3 +96,46 @@ def split_checkpoint_filename(name):
 
     parts = name.split('_', 1)
     return [parts[0]] + parts[1].rsplit('.')
+
+
+def restore_cp_from_db(project, db_config, options):
+    last_checkpoint_db_name = get_last_checkpoint_db_name(project, db_config, options)
+
+    if last_checkpoint_db_name is not None:
+        logger.info('Restoring from last found checkpoint database %s', last_checkpoint_db_name)
+        imu.drop_db_if_exists(db_config, options)
+        imu.copy_db(last_checkpoint_db_name, db_config['name'], db_config, options)
+
+        source_name = split_checkpoint_db_name(last_checkpoint_db_name)[1]
+        logger.info('Resuming after source %s', source_name)
+        return list(project.sources.keys()).index(source_name) + 1
+    else:
+        imu.wipe_db(db_config, options)
+        return 0
+
+
+def restore_cp_from_fs(project, checkpoints_path, db_config, options):
+    """
+    Try to restore a checkpoint from the filesystem
+
+    :param project:
+    :param checkpoints_path:
+    :param db_config:
+    :param options:
+    :return: The index of the next source that needs to be loaded.  If we're restoring from the last source then this
+    will be len(sources).  If we didn't find a checkpoint to restore then this will be 0
+    """
+
+    imu.wipe_db(db_config, options)
+
+    last_checkpoint_location = get_last_checkpoint_path(project, checkpoints_path)
+
+    if last_checkpoint_location is not None:
+        logger.info('Restoring from last found checkpoint %s', last_checkpoint_location)
+        imu.restore_db(db_config, last_checkpoint_location, options)
+
+        source_name = split_checkpoint_path(last_checkpoint_location)[2]
+        logger.info('Resuming after source %s', source_name)
+        return list(project.sources.keys()).index(source_name) + 1
+    else:
+        return 0
