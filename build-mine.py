@@ -61,7 +61,7 @@ for type_ in 'production', 'common-tgt-items', 'userprofile-production':
     db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
 imu.drop_db_if_exists(db_configs['production'], options)
-imu.run_on_db(['createdb', '-E', 'UTF8', db_configs['production']['name']], db_configs['production'], options)
+imu.create_db(db_configs['production'], options)
 
 if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
     last_checkpoint_location = imm.get_last_checkpoint_path(project, args.checkpoints_location)

@@ -12,6 +12,10 @@ def check_path_exists(path):
         exit(1)
 
 
+def create_db(db_config, options):
+    run_on_db(['createdb', '-E', 'UTF8', db_config['name']], db_config, options)
+
+
 def drop_db_if_exists(db_config, options):
     if run_return_rc(
             "psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_config['name'],
