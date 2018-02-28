@@ -12,6 +12,16 @@ def check_path_exists(path):
         exit(1)
 
 
+def drop_db_if_exists(db_config, options):
+    if run_return_rc(
+            "psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_config['production.name'],
+            {**options, **{'run-in-shell': True}}) == 0:
+
+        # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
+        pg_terminate_backends(db_config, options)
+        run_on_db(['dropdb', db_config['production.name']], db_config, options)
+
+
 def run(cmd, options):
     rc = run_return_rc(cmd, options)
     if rc != 0:

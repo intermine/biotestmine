@@ -51,14 +51,7 @@ for source_name in project.sources:
 
 db_config = imm.get_db_config(args.mine_properties_path)
 
-if imu.run_return_rc(
-        "psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_config['production.name'],
-        {**options, **{'run-in-shell': True}}) == 0:
-
-    # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-    imu.pg_terminate_backends(db_config, options)
-    imu.run_on_db(['dropdb', db_config['production.name']], db_config, options)
-
+imu.drop_db_if_exists(db_config, options)
 imu.run_on_db(['createdb', '-E', 'UTF8', db_config['production.name']], db_config, options)
 
 if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION_CONST:
