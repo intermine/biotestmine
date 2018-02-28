@@ -133,7 +133,7 @@ def integrate_source(source, db_config, checkpoint_location, options):
     imu.run(['./gradlew', 'integrate', '-Psource=%s' % source.name, '--stacktrace', '--no-daemon'], options)
 
     if source.dump:
-        logger.info('Checkpoint dumping at source %s', source.name)
+        logger.info('Checkpointing at source %s', source.name)
 
         if checkpoint_location == DATABASE_CHECKPOINT_LOCATION:
             # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
