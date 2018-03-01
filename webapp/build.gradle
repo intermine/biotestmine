@@ -38,10 +38,16 @@ war {
 }
 
 task warWebApp(type: War) {
+    dependsOn 'copyWebappContent'
     description "Create the war from the build/explodedWebAppDir directory"
-    from "${explodedWebAppDir}"
+    from {"${explodedWebAppDir}"}
     exclude "WEB-INF/web.properties"
     webInf { from "${mergePropsDir}" }
+}
+
+task copyWebappContent(type: Copy) {
+    from "src/main/webapp/"
+    into "${explodedWebAppDir}"
 }
 
 // read in biotestmine.properties to get the contextPath
@@ -52,4 +58,3 @@ gretty {
     jvmArgs = ['-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true']
     contextPath = props.getProperty("webapp.path")
 }
-
