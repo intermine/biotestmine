@@ -108,12 +108,13 @@ def pg_terminate_backends(db_configs, options):
 
 
 def pg_terminate_backend(db_config, options):
-    run_on_db(
-        ['psql',
-         '-P', 'pager=off',
-         '-q',
-         '-o', '/dev/null',
-         '-c', 'SELECT pg_terminate_backend(pg_stat_activity.pid)'
-               ' FROM pg_stat_activity '
-               ' WHERE datname = current_database()'
-               ' AND pid <> pg_backend_pid();', db_config['name']], db_config, options)
+    if (options['force-backend-termination']):
+        run_on_db(
+            ['psql',
+             '-P', 'pager=off',
+             '-q',
+             '-o', '/dev/null',
+             '-c', 'SELECT pg_terminate_backend(pg_stat_activity.pid)'
+                   ' FROM pg_stat_activity '
+                   ' WHERE datname = current_database()'
+                   ' AND pid <> pg_backend_pid();', db_config['name']], db_config, options)

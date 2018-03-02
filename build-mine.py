@@ -32,6 +32,12 @@ parser.add_argument(
     '--dry-run', action='store_true', default=False,
     help='Don''t actually build anything, just show the commands that would be executed')
 
+parser.add_argument(
+    '--fbt', '--force-backend-termination',
+    help='If true, then we will periodically run the postgres function pg_terminate_backend() to try and clear out old\n'
+        'connections. This may help if InterMine is not properly closing its connections.',
+    action='store_true', default=False)
+
 args = parser.parse_args()
 if args.checkpoints_location is None:
     logger.info('No checkpoints location. Exiting')
@@ -43,7 +49,7 @@ if args.checkpoints_location != imm.DATABASE_CHECKPOINT_LOCATION:
     imu.check_path_exists(args.checkpoints_location)
 imu.check_path_exists('project.xml')
 
-options = {'dry-run': args.dry_run, 'run-in-shell': False}
+options = {'dry-run': args.dry_run, 'run-in-shell': False, 'force-backend-termination': args.fbt}
 
 with open('project.xml') as f:
     project = imp.Project(f)
