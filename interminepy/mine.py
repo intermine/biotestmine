@@ -11,11 +11,25 @@ DATABASE_CHECKPOINT_LOCATION = ':database:'
 
 
 def get_db_config(props, db_type):
+    server_name_key = 'db.%s.datasource.serverName' % db_type
+    database_name_key = 'db.%s.datasource.databaseName' % db_type
+    user_key = 'db.%s.datasource.user' % db_type
+    password_key = 'db.%s.datasource.password' % db_type
+
+    name = props[database_name_key]
+    host = props[server_name_key]
+    user = props[user_key]
+    pass_ = props[password_key]
+
+    logger.info(
+        'Loaded %s config:\n  %s=%s\n  %s=%s\n  %s=%s\n  %s=(hidden)'
+        % (db_type, database_name_key, name, server_name_key, host, user_key, user, password_key))
+
     return {
-        'host': props['db.%s.datasource.serverName' % db_type],
-        'name': props['db.%s.datasource.databaseName' % db_type],
-        'user': props['db.%s.datasource.user' % db_type],
-        'pass': props['db.%s.datasource.password' % db_type]
+        'host': host,
+        'name': name,
+        'user': user,
+        'pass': pass_
     }
 
 
