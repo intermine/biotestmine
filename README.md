@@ -17,4 +17,4 @@ This mine can be built with the `build-mine.py` script.  Steps:
 By default, this creates checkpoint databases in postgres so that a build can be resumed at various stages. However,
 these checkpoints can also be made as Postgres dumps to the filesystem instead.
 
-For more information please see this (wiki page)[https://github.com/intermine/intermine/wiki/build-mine.py]
+For more information please see https://github.com/intermine/intermine/wiki/build-mine.py
