@@ -34,8 +34,8 @@ parser.add_argument(
 
 parser.add_argument(
     '--fbt', '--force-backend-termination',
-    help='If true, then we will periodically run the postgres function pg_terminate_backend() to try and clear out old\n'
-        'connections. This may help if InterMine is not properly closing its connections.',
+    help='If true, then we will periodically run the postgres function pg_terminate_backend() to try and clear out'
+         ' old connections. This may help if InterMine is not properly closing its connections.',
     action='store_true', default=False)
 
 args = parser.parse_args()
