@@ -33,7 +33,6 @@ parser.add_argument(
     help='Don''t actually build anything, just show the commands that would be executed')
 
 args = parser.parse_args()
-print(args)
 if args.checkpoints_location is None:
     logger.info('No checkpoints location. Exiting')
     exit(0)
