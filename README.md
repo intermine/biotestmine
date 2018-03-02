@@ -4,7 +4,7 @@ This is an example InterMine for demo and testing
 
 # Building the mine
 
-This mine can be built with the `mine-build.py` script.  Steps:
+This mine can be built with the `build-mine.py` script.  Steps:
 
 1. Install required modules with
 
@@ -12,7 +12,7 @@ This mine can be built with the `mine-build.py` script.  Steps:
 
 2. Run script using mine properties file, e.g.
 
-`./mine-build.py ~/.intermine/biotestmine.properties`
+`./build-mine.py ~/.intermine/biotestmine.properties`
 
 By default, this creates checkpoint databases in postgres so that a build can be resumed at various stages. However,
 these checkpoints can also be made as Postgres dumps to the filesystem instead.
