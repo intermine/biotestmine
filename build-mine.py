@@ -58,6 +58,10 @@ db_configs = {}
 for type_ in 'production', 'common-tgt-items', 'userprofile-production':
     db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
+# The production database we want in SQL_ASCII for performance reasons
+# See http://intermine.readthedocs.io/en/latest/system-requirements/software/postgres/postgres/#character-set-encoding
+db_configs['production'].update({'template': 'template0', 'encoding': 'SQL_ASCII'})
+
 imu.create_db_if_not_exists(db_configs['common-tgt-items'], options)
 imu.create_db_if_not_exists(db_configs['userprofile-production'], options)
 

@@ -28,7 +28,15 @@ def check_path_exists(path):
 
 
 def create_db(db_config, options):
-    run_on_db(['createdb', '-E', 'UTF8', db_config['name']], db_config, options)
+    cmd = ['createdb', '-E', 'UTF8', db_config['name']]
+
+    if 'template' in db_config:
+        cmd += ['-T', db_config['template']]
+
+    if 'encoding' in db_config:
+        cmd += ['-E', db_config['encoding']]
+
+    run_on_db(cmd, db_config, options)
 
 
 def create_db_if_not_exists(db_config, options):
