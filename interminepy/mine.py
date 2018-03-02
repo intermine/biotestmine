@@ -144,8 +144,7 @@ def restore_cp_from_fs(project, checkpoints_path, db_config, options):
 def integrate_sources_from_index(project, index, checkpoints_location, db_configs, options):
     source_names = list(project.sources.keys())[index:]
     for source_name in source_names:
-        # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-        imu.pg_terminate_backends(db_configs, options)
+        imu.maybe_pg_terminate_backends(db_configs, options)
         integrate_source(project.sources[source_name], db_configs['production'], checkpoints_location, options)
 
 
@@ -156,8 +155,7 @@ def integrate_source(source, db_config, checkpoint_location, options):
         logger.info('Checkpointing at source %s', source.name)
 
         if checkpoint_location == DATABASE_CHECKPOINT_LOCATION:
-            # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-            imu.pg_terminate_backend(db_config, options)
+            imu.maybe_pg_terminate_backend(db_config, options)
             imu.copy_db(db_config['name'], make_checkpoint_db_name(db_config, source), db_config, options)
         else:
             imu.run_on_db(
