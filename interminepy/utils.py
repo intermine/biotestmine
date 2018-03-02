@@ -108,7 +108,7 @@ def pg_terminate_backends(db_configs, options):
 
 
 def pg_terminate_backend(db_config, options):
-    if (options['force-backend-termination']):
+    if options['force-backend-termination']:
         run_on_db(
             ['psql',
              '-P', 'pager=off',
