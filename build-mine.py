@@ -48,8 +48,8 @@ options = {'dry-run': args.dry_run, 'run-in-shell': False}
 with open('project.xml') as f:
     project = imp.Project(f)
 
-for source_name in project.sources:
-    logger.debug('Found source %s in project.xml', source_name)
+# for source_name in project.sources:
+#     logger.debug('Found source %s in project.xml', source_name)
 
 with open(args.mine_properties_path) as f:
     mine_java_properties = jprops.load_properties(f)
