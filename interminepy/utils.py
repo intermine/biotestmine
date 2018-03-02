@@ -98,7 +98,10 @@ def run_return_rc(cmd, options, env=None):
 
 def run_on_db(cmd, db_config, options):
     access_db_params = ['-U', db_config['user'], '-h', db_config['host']]
+    if db_config['port'] is not None:
+        access_db_params += ['-p', db_config['port']]
     env = {'PGPASSWORD': db_config['pass']}
+
     run(cmd + access_db_params, options, env=env)
 
 

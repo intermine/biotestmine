@@ -25,8 +25,14 @@ def get_db_config(props, db_type):
         'Loaded %s config:\n  %s=%s\n  %s=%s\n  %s=%s\n  %s=(hidden)'
         % (db_type, database_name_key, name, server_name_key, host, user_key, user, password_key))
 
+    if ':' in host:
+        host, port = host.split(':')
+    else:
+        port = None
+
     return {
         'host': host,
+        'port': port,
         'name': name,
         'user': user,
         'pass': pass_
