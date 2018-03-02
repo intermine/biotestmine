@@ -52,8 +52,7 @@ def copy_db(source_db_name, dest_db_name, db_config, options):
 
 def drop_db_if_exists(db_config, options):
     if does_db_exist(db_config['name'], options):
-        # FIXME: We are having to do this for now because InterMine is not shutting down its connections properly
-        pg_terminate_backend(db_config, options)
+        maybe_pg_terminate_backend(db_config, options)
         run_on_db(['dropdb', db_config['name']], db_config, options)
 
 
@@ -105,12 +104,12 @@ def run_on_db(cmd, db_config, options):
     run(cmd + access_db_params, options, env=env)
 
 
-def pg_terminate_backends(db_configs, options):
+def maybe_pg_terminate_backends(db_configs, options):
     for db_config in db_configs.values():
-        pg_terminate_backend(db_config, options)
+        maybe_pg_terminate_backend(db_config, options)
 
 
-def pg_terminate_backend(db_config, options):
+def maybe_pg_terminate_backend(db_config, options):
     if options['force-backend-termination']:
         run_on_db(
             ['psql',
