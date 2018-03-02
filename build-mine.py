@@ -16,7 +16,7 @@ import interminepy.utils as imu
 
 # MAIN
 logger = logging.getLogger('build-mine.py')
-coloredlogs.install(level='DEBUG')
+coloredlogs.install(level='DEBUG', fmt='%(asctime)s %(name)s %(levelname)s %(message)s')
 
 parser = argparse.ArgumentParser('Build the mine')
 
