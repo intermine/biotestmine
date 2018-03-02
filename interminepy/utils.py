@@ -62,14 +62,14 @@ def restore_db(db_config, checkpoint_path, options):
         db_config, options)
 
 
-def run(cmd, options):
-    rc = run_return_rc(cmd, options)
+def run(cmd, options, env=None):
+    rc = run_return_rc(cmd, options, env=env)
     if rc != 0:
         logger.error('Command [%s] failed with rc %d', ' '.join(cmd), rc)
         exit(1)
 
 
-def run_return_rc(cmd, options):
+def run_return_rc(cmd, options, env=None):
     if isinstance(cmd, list):
         raw_cmd = ' '.join(cmd)
     else:
@@ -80,12 +80,13 @@ def run_return_rc(cmd, options):
     if options['dry-run']:
         return 0
 
-    return subprocess.call(cmd, shell=options['run-in-shell'])
+    return subprocess.call(cmd, shell=options['run-in-shell'], env=env)
 
 
 def run_on_db(cmd, db_config, options):
     access_db_params = ['-U', db_config['user'], '-h', db_config['host']]
-    run(cmd + access_db_params, options)
+    env = {'PGPASSWORD': db_config['pass']}
+    run(cmd + access_db_params, options, env=env)
 
 
 def pg_terminate_backends(db_configs, options):
