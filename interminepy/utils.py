@@ -31,6 +31,11 @@ def create_db(db_config, options):
     run_on_db(['createdb', '-E', 'UTF8', db_config['name']], db_config, options)
 
 
+def create_db_if_not_exists(db_config, options):
+    if not does_db_exist(db_config['name'], options):
+        create_db(db_config, options)
+
+
 def copy_db(source_db_name, dest_db_name, db_config, options):
     run_on_db(
         ['createdb', '-T', source_db_name, dest_db_name],

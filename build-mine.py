@@ -58,6 +58,9 @@ db_configs = {}
 for type_ in 'production', 'common-tgt-items', 'userprofile-production':
     db_configs[type_] = imm.get_db_config(mine_java_properties, type_)
 
+imu.create_db_if_not_exists(db_configs['common-tgt-items'], options)
+imu.create_db_if_not_exists(db_configs['userprofile-production'], options)
+
 if args.checkpoints_location == imm.DATABASE_CHECKPOINT_LOCATION:
     next_source_index = imm.restore_cp_from_db(project, db_configs['production'], options)
 else:
