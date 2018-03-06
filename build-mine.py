@@ -29,6 +29,12 @@ parser.add_argument(
     default=imm.DATABASE_CHECKPOINT_LOCATION)
 
 parser.add_argument(
+    '-r', '--reset', action='store_true', default=False,
+    help='Reset the build. This will delete all existing checkpoints from the checkpoint location and start the mine'
+    ' build from the beginning.')
+
+
+parser.add_argument(
     '--dry-run', action='store_true', default=False,
     help='Don''t actually build anything, just show the commands that would be executed')
 
@@ -73,8 +79,12 @@ imu.create_db_if_not_exists(db_configs['common-tgt-items'], options)
 # imu.create_db_if_not_exists(db_configs['userprofile-production'], options)
 
 if args.checkpoints_location == imm.DATABASE_CHECKPOINT_LOCATION:
+    if args.reset:
+        imm.delete_all_cp_from_db(project, db_configs['production'], options)
     next_source_index = imm.restore_cp_from_db(project, db_configs['production'], options)
 else:
+    if args.reset:
+        imm.delete_all_cp_from_fs(project, args.checkpoints_location, options)
     next_source_index = imm.restore_cp_from_fs(project, args.checkpoints_location, db_configs['production'], options)
 
 if next_source_index <= 0:

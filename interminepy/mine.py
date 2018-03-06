@@ -98,12 +98,25 @@ def split_checkpoint_filename(name):
     return [parts[0]] + parts[1].rsplit('.')
 
 
+def delete_all_cp_from_db(project, db_config, options):
+    for source in list(project.sources.values()):
+        db_name = make_checkpoint_db_name(db_config, source)
+        imu.drop_db_if_exists(db_name, db_config, options)
+
+
+def delete_all_cp_from_fs(project, checkpoint_path, options):
+    for source in list(project.sources.values()):
+        path = os.path.join(checkpoint_path, make_checkpoint_filename(source))
+        if os.path.exists(path):
+            os.unlink(path)
+
+
 def restore_cp_from_db(project, db_config, options):
     last_checkpoint_db_name = get_last_checkpoint_db_name(project, db_config, options)
 
     if last_checkpoint_db_name is not None:
         logger.info('Restoring from last found checkpoint database %s', last_checkpoint_db_name)
-        imu.drop_db_if_exists(db_config, options)
+        imu.drop_db_if_exists(db_config['name'], db_config, options)
         imu.copy_db(last_checkpoint_db_name, db_config['name'], db_config, options)
 
         source_name = split_checkpoint_db_name(last_checkpoint_db_name)[1]
