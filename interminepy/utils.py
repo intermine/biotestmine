@@ -16,9 +16,9 @@ def does_db_exist(db_name, options):
     """
     # FIXME: There is a better way of doing this but need to make sure it works
     # SQL statement at https://stackoverflow.com/a/17757560/607179 instead of cutting up human command line output
-    return run_return_rc(
-        "psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_name,
-        {**options, **{'run-in-shell': True}}) == 0
+    options = options.copy()
+    options.update({'run-in-shell': True})
+    return run_return_rc("psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_name, options) == 0
 
 
 def check_path_exists(path):
@@ -50,10 +50,10 @@ def copy_db(source_db_name, dest_db_name, db_config, options):
         db_config, options)
 
 
-def drop_db_if_exists(db_config, options):
-    if does_db_exist(db_config['name'], options):
+def drop_db_if_exists(name, db_config, options):
+    if does_db_exist(name, options):
         maybe_pg_terminate_backend(db_config, options)
-        run_on_db(['dropdb', db_config['name']], db_config, options)
+        run_on_db(['dropdb', name], db_config, options)
 
 
 def wipe_db(db_config, options):
@@ -64,7 +64,7 @@ def wipe_db(db_config, options):
     :param options:
     :return:
     """
-    drop_db_if_exists(db_config, options)
+    drop_db_if_exists(db_config['name'], db_config, options)
     create_db(db_config, options)
 
 
