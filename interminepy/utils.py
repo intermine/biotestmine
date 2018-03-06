@@ -16,9 +16,8 @@ def does_db_exist(db_name, options):
     """
     # FIXME: There is a better way of doing this but need to make sure it works
     # SQL statement at https://stackoverflow.com/a/17757560/607179 instead of cutting up human command line output
-    return run_return_rc(
-        "psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_name,
-        {**options, **{'run-in-shell': True}}) == 0
+    options.update({'run-in-shell': True})
+    return run_return_rc("psql -lqt | cut -d \| -f 1 | grep -qe '\s%s\s'" % db_name, options) == 0
 
 
 def check_path_exists(path):
