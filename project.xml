@@ -33,7 +33,6 @@
     </source>
 
     <source name="go-annotation" type="go-annotation" dump="true">
-      <property name="ontologyfile" location="/data/malaria/go/gene_ontology.obo"/>
       <property name="src.data.dir" location="/data/malaria/go-annotation/"/>
     </source>
 
