@@ -25,7 +25,8 @@ parser.add_argument(
 
 parser.add_argument(
     '-c', '--checkpoints-location',
-    help='The location for reading/writing database checkpoints',
+    help='The location for reading/writing database checkpoints. If not given, then this defaults to the database,'
+         ' which can also be selected with the special location "%s"' % imm.DATABASE_CHECKPOINT_LOCATION,
     default=imm.DATABASE_CHECKPOINT_LOCATION)
 
 parser.add_argument(
