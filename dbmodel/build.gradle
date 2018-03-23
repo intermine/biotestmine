@@ -15,9 +15,9 @@ sourceSets {
 }
 
 dependencies {
-    compile group: "org.intermine", name: "intermine-integrate", version: imVersion
-    compile group: "org.intermine", name: "intermine-resources", version: version // for log4j
-    compile group: "org.intermine", name: "bio-postprocess", version: imVersion
+    compile group: "org.intermine", name: "intermine-integrate", version: System.getProperty("imVersion")
+    compile group: "org.intermine", name: "intermine-resources", version: System.getProperty("imVersion") // for log4j
+    compile group: "org.intermine", name: "bio-postprocess", version: System.getProperty("bioVersion")
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 

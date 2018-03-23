@@ -8,13 +8,11 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'org.intermine', name: 'plugin', version: '1.+'
+        classpath group: 'org.intermine', name: 'plugin', version: System.getProperty("imVersion")
     }
 }
 
 ext {
-    imVersion = "2.+"
-
     mineRelease = hasProperty('release') ? "." + release : ''
     mineName = "biotestmine"
     minePropertyFileName = "${mineName}.properties$mineRelease"
@@ -27,6 +25,7 @@ ext {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven'
 
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
