@@ -19,7 +19,7 @@ configurations {
 
 dependencies {
     compile (project(":dbmodel")) {transitive = false}
-    compile group: "org.intermine", name: "bio-core", version: System.getProperty("bioVersion")
+    compile group: "org.intermine", name: "bio-core", version: System.getProperty("bioVersion"), transitive: false
     compile group: "org.intermine", name: "intermine-api", version: System.getProperty("imVersion")
     compile group: "org.intermine", name: "intermine-webapp", version: System.getProperty("imVersion"), classifier: "classes"
     compile group: "org.intermine", name: "intermine-webtasks", version: System.getProperty("imVersion")
