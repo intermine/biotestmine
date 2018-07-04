@@ -13,8 +13,7 @@ USERPROFILE_DB=$MINENAME-userprofile
 IMDIR=$HOME/.intermine
 PROP_FILE=${MINENAME}.properties
 DATA_DIR=$HOME/${MINENAME}-sample-data
-LOG_DIR=$DIR/log
-LOAD_LOG="${LOG_DIR}/load-data.log"
+LOAD_LOG="${LOG_DIR}/setup.log"
 PROJECT_BUILD="${DIR}/../bio/scripts/project_build"
 PRIORITIES=$DIR/dbmodel/resources/genomic_priorities.properties
 
@@ -41,7 +40,7 @@ if test -z $DB_ENCODING; then
     DB_ENCODING=SQL_ASCII
 fi
 
-for dep in perl psql createdb ant; do
+for dep in perl psql createdb; do
   if test -z $(which $dep); then
     echo "ERROR: $dep not found - please make sure $dep is installed and configured correctly"
     exit 1
@@ -74,10 +73,6 @@ if test $DEBUG; then
     echo "#  DB_ENCODING = $DB_ENCODING"
 fi
 
-if test ! -d $LOG_DIR; then
-    mkdir $LOG_DIR
-fi
-
 if test ! -d $IMDIR; then
     echo '#---> Making .intermine configuration directory.'
     mkdir $IMDIR
@@ -86,18 +81,13 @@ fi
 if test ! -f $IMDIR/$PROP_FILE; then
     echo "#---> $PROP_FILE not found. Providing default properties file..."
     cd $IMDIR
-    cp $DIR/../bio/tutorial/malariamine.properties $PROP_FILE
+    wget https://raw.githubusercontent.com/intermine/biotestmine/master/data/biotestmine.properties
     sed -i=bak "s/PSQL_USER/$PSQL_USER/g" $PROP_FILE
     sed -i=bak "s/PSQL_PWD/$PSQL_PWD/g" $PROP_FILE
     sed -i=bak "s/TOMCAT_USER/$TOMCAT_USER/g" $PROP_FILE
     sed -i=bak "s/TOMCAT_PWD/$TOMCAT_PWD/g" $PROP_FILE
-    sed -i=bak "s/items-malariamine/$ITEMS_DB/g" $PROP_FILE
-    sed -i=bak "s/userprofile-malariamine/$USERPROFILE_DB/g" $PROP_FILE
-    sed -i=bak "s/databaseName=malariamine/databaseName=$PROD_DB/g" $PROP_FILE
-    sed -i=bak "s/malariamine/$MINENAME/gi" $PROP_FILE
-    sed -i=bak "s/localhost/$SERVER/g" $PROP_FILE
-    sed -i=bak "s/8080/$PORT/g" $PROP_FILE
     echo "#--- Created $PROP_FILE"
+    cd $DIR
 fi
 
 echo '#---> Checking databases...'
@@ -119,21 +109,20 @@ else
     cd $HOME
     mkdir $DATA_DIR
     cd $DATA_DIR
-    cp $DIR/../bio/tutorial/malaria-data.tar.gz .
+    wget https://github.com/intermine/biotestmine/blob/master/data/malaria-data.tar.gz
     echo '#---> Unpacking sample data...'
-    tar -zxvf malaria-data.tar.gz >> $DIR/log/extract.log
+    tar -zxvf malaria-data.tar.gz 
     rm malaria-data.tar.gz
 fi
 
 cd $DIR
 if test ! -f project.xml; then
     echo '#---> Copying over malariamine project.xml'
-    cp ../bio/tutorial/project.xml .
+    wget https://raw.githubusercontent.com/intermine/biotestmine/master/data/project.xml
 fi
 
 echo '#---> Personalising project.xml'
-sed -i=bak "s!DATA_DIR!$DATA_DIR!g" project.xml
-sed -i=bak "s/malariamine/$MINENAME/g" project.xml
+sed "s!DATA_DIR!$DATA_DIR!g" project.xml
 
 if egrep -q ProteinDomain.shortName $PRIORITIES; then
     echo '#--- Integration key exists.'
@@ -142,31 +131,25 @@ else
     echo 'ProteinDomain.shortName = interpro, uniprot-malaria' >> $PRIORITIES
 fi
 
-cd $DIR/dbmodel
 echo '#---> Building DB'
-ant clean build-db >> $DIR/log/build-db.log
+./gradlew builddb 
 
 if test ! -f $PROJECT_BUILD; then
-    echo "ERROR: Cannot find project build script at $PROJECT_BUILD"
-    exit 1
+    echo '#---> Copying over the InterMine build script'
+    wget https://raw.githubusercontent.com/intermine/intermine-scripts/master/project_build
 fi
 
 echo '#---> Loading data (this could take some time) ...'
-cd $DIR
+
 $PROJECT_BUILD -b -v $SERVER $HOME/${MINENAME}-dump 2>&1 \
-    | tee -a $LOAD_LOG \
     | grep -E '(action.*took|failed)'
 
 echo '#--- Finished loading data.'
-cp pbuild.log $DIR/log/
 
-cd $DIR/webapp
 echo '#---> Building userprofile..'
-ant build-db-userprofile >> $DIR/log/build-userprofile-db.log
-echo '#---> Building web-application'
-ant default >> $DIR/log/build-webapp.log
+./gradlew buildUserDB
 echo '#---> Releasing web-application'
-ant remove-webapp release-webapp | tee -a $DIR/log/build-webapp.log | grep tomcat-deploy
+./gradlew tomcatStartWar
 
-echo BUILD COMPLETE: Logs available in $DIR/log
+echo BUILD COMPLETE
 
