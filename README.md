@@ -1,20 +1,19 @@
 # README
 
-This is an example InterMine for demo and testing
+This is an example InterMine for demo and testing.
+
+It's used by the `tutorial <http://intermine.readthedocs.io/en/latest/get-started/tutorial/>`_, and we use it for our continuous integration tests on `Travis <https://travis-ci.org/intermine/intermine/builds>`_.
 
 # Building the mine
 
-This mine can be built with the `build-mine.py` script.  Steps:
+This mine can be built with the `./setup.sh` script.  Steps:
 
-1. Install required modules with
+1. Create an `.intermine` directory in your $HOME directory
+2. Copy this file into `.intermine`:
 
-`sudo pip3 install -r requirements.txt`
+`$HOME/.intermine` $ `wget https://github.com/intermine/biotestmine/blob/master/data/biotestmine.properties
 
-2. Run script using mine properties file, e.g.
+3. Replace PSQL_USER and PSQL_PWD with your postgres username and password.
+4. Run build script in this repository:
 
-`./build-mine.py ~/.intermine/biotestmine.properties`
-
-By default, this creates checkpoint databases in postgres so that a build can be resumed at various stages. However,
-these checkpoints can also be made as Postgres dumps to the filesystem instead.
-
-For more information please see https://github.com/intermine/intermine/wiki/build-mine.py
+`./setup.sh`

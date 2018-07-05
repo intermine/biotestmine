@@ -14,7 +14,6 @@ IMDIR=$HOME/.intermine
 PROP_FILE=${MINENAME}.properties
 DATA_DIR=$HOME/${MINENAME}-sample-data
 LOAD_LOG="${LOG_DIR}/setup.log"
-PROJECT_BUILD="${DIR}/../bio/scripts/project_build"
 PRIORITIES=$DIR/dbmodel/resources/genomic_priorities.properties
 
 # Inherit SERVER, PORT, PSQL_USER, PSQL_PWD, TOMCAT_USER and TOMCAT_PWD if in env.
@@ -122,7 +121,7 @@ if test ! -f project.xml; then
 fi
 
 echo '#---> Personalising project.xml'
-sed "s!DATA_DIR!$DATA_DIR!g" project.xml
+sed -i "s!DATA_DIR!$DATA_DIR!g" project.xml
 
 if egrep -q ProteinDomain.shortName $PRIORITIES; then
     echo '#--- Integration key exists.'
@@ -131,18 +130,18 @@ else
     echo 'ProteinDomain.shortName = interpro, uniprot-malaria' >> $PRIORITIES
 fi
 
-echo '#---> Building DB'
-./gradlew builddb 
+#echo '#---> Building DB'
+#./gradlew builddb 
 
-if test ! -f $PROJECT_BUILD; then
+if test ! -f "project_build"; then
     echo '#---> Copying over the InterMine build script'
     wget https://raw.githubusercontent.com/intermine/intermine-scripts/master/project_build
+    chmod a+x project_build
 fi
 
-echo '#---> Loading data (this could take some time) ...'
+echo '#---> Loading data (this may take some time) ...'
 
-$PROJECT_BUILD -b -v $SERVER $HOME/${MINENAME}-dump 2>&1 \
-    | grep -E '(action.*took|failed)'
+./project_build -b -v $SERVER $HOME/${MINENAME}-dump
 
 echo '#--- Finished loading data.'
 
