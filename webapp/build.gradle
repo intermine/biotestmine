@@ -1,6 +1,7 @@
 apply plugin: "war"
 apply from: "https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin"
 apply plugin: "webapp"
+apply plugin: "com.bmuschko.cargo"
 
 sourceSets {
     main {
@@ -64,6 +65,74 @@ gretty {
     jvmArgs = ['-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true']
     contextPath = props.getProperty("webapp.path")
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Use cargo to deploy the webapp to an existing Tomcat instance, either via the HTTP Tomcat manager or local file copy.
+// ---------------------------------------------------------------------------------------------------------------------
+cargo {
+
+    // change this to match your Tomcat major version (keep the x)
+    containerId = 'tomcat8x'
+    int remotePort = 8080
+    if (props.getProperty("webapp.port") != null) {
+        remotePort = props.getProperty("webapp.port").toInteger()
+    }
+
+    // change this to the Tomcat root of your choice
+    deployable {
+        context = props.getProperty("webapp.path")
+    }
+
+    def remoteHostName = "localhost"
+
+    // if "hostname" is defined in properties file, use that
+    if (props.getProperty("webapp.hostname") != null) {
+        remoteHostName = props.getProperty("webapp.hostname")
+    } else {
+        remoteHostName = getServerName(props.getProperty("webapp.deploy.url"))
+    }
+
+    def remoteProtocol = "http"
+
+    // if "protocol" is defined in properties file, use that
+    if (props.getProperty("webapp.protocol") != null) {
+        remoteProtocol = props.getProperty("webapp.protocol")
+    }
+
+    // change these to match your Tomcat host and tomcat-users config
+    remote {
+        hostname = remoteHostName
+        protocol = remoteProtocol
+        username = props.getProperty("webapp.manager")
+        password = props.getProperty("webapp.password")
+        port = remotePort
+    }
+}
+
+cargoStartLocal.dependsOn war
+cargoRunLocal.dependsOn war
+cargoRedeployLocal.dependsOn war
+cargoDeployRemote.dependsOn war
+cargoRedeployRemote.dependsOn war
+
+// gets the hostname from the old intermine parameter, e.g. http://localhost:8080 > localhost
+String getServerName(String deployUrl) {
+    // chop off protocol
+    if (deployUrl != null && deployUrl.indexOf("/") >= 0) {
+        // https:// or http://
+        deployUrl = deployUrl.substring(deployUrl.indexOf("/") + 2, deployUrl.length())
+    }
+
+    // chop off port
+    if (deployUrl != null && deployUrl.contains(":")) {
+        // localhost:8080
+        String[] bits = deployUrl.split(":")
+        deployUrl = bits[0]
+    }
+
+    return deployUrl
+}
+
 
 task blueGenesStart(type: JavaExec) {
     classpath = configurations.onlyRunTime
