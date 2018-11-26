@@ -108,7 +108,7 @@ else
     cd $HOME
     mkdir $DATA_DIR
     cd $DATA_DIR
-    wget https://github.com/intermine/biotestmine/blob/master/data/malaria-data.tar.gz
+    wget https://github.com/intermine/biotestmine/blob/master/data/malaria-data.tar.gz?raw=true -O malaria-data.tar.gz
     echo '#---> Unpacking sample data...'
     tar -zxvf malaria-data.tar.gz 
     rm malaria-data.tar.gz
