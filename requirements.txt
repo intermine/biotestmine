@@ -1,3 +1,0 @@
-coloredlogs==9.0
-jprops==2.0.2
-lxml==3.7.3
