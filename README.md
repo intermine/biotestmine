@@ -14,6 +14,11 @@ This mine can be built with the `./setup.sh` script.  Steps:
 `$HOME/.intermine` $ `wget https://github.com/intermine/biotestmine/blob/master/data/biotestmine.properties
 
 3. Replace PSQL_USER and PSQL_PWD with your postgres username and password.
-4. Run build script in this repository:
+4. (Optional) Initialise the two search repositories used by InterMine. Follow the instructions here:
+
+    https://intermine.readthedocs.io/en/latest/system-requirements/software/solr/
+
+If you don't do this, the keyword search won't work in your mine. 
+5. Run build script in this repository:
 
 `./setup.sh`
