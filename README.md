@@ -18,7 +18,7 @@ This mine can be built with the `./setup.sh` script.  Steps:
 
     https://intermine.readthedocs.io/en/latest/system-requirements/software/solr/
 
-If you don't do this, the keyword search won't work in your mine. 
+If you don't do this, the keyword search won't work in your mine.
 5. Run build script in this repository:
 
 `./setup.sh`
