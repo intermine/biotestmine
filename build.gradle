@@ -4,6 +4,7 @@ buildscript {
         jcenter()
         maven {
             url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
+            url "https://clojars.org/repo"
         }
     }
 
@@ -36,6 +37,7 @@ subprojects {
         jcenter()
         maven {
             url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
+            url "https://clojars.org/repo"
         }
     }
 
