@@ -8,8 +8,8 @@ set -o pipefail # Pipes are considered failed if any of their commands fail.
 DIR="$(cd $(dirname "$0"); pwd)"
 MINENAME=biotestmine
 PROD_DB=$MINENAME
-ITEMS_DB=$MINENAME-items
-USERPROFILE_DB=$MINENAME-userprofile
+ITEMS_DB=items-$MINENAME
+USERPROFILE_DB=userprofile-$MINENAME
 IMDIR=$HOME/.intermine
 PROP_FILE=${MINENAME}.properties
 DATA_DIR=$HOME/${MINENAME}-sample-data
