@@ -141,7 +141,7 @@ fi
 
 echo '#---> Loading data (this may take some time) ...'
 
-./project_build -b -v $SERVER $HOME/${MINENAME}-dump
+./project_build -b -v -E$DB_ENCODING $SERVER $HOME/${MINENAME}-dump
 
 echo '#--- Finished loading data.'
 

@@ -16,3 +16,4 @@ This mine can be built with the `./setup.sh` script.  Steps:
 1. Replace PSQL_USER and PSQL_PWD with your postgres username and password.
 1. (Optional) Initialise the two search repositories used by InterMine. If you don't do this, the keyword search won't work in your mine. Follow the instructions for [Solr](https://intermine.readthedocs.io/en/latest/system-requirements/software/solr/)
 1. Run build script in your `biotestmine` repository: `./setup.sh`
+Note: If you get an error related to `SQL_ASCII`, you could either use `DB_ENCODING=UTF-8 ./setup.sh` or follow the [documentation to set postgresql to use SQL_ASCII](https://intermine.readthedocs.io/en/latest/system-requirements/software/postgres/postgres/#character-set-encoding).
