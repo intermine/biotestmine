@@ -8,6 +8,9 @@ It's used by the [tutorial](http://intermine.readthedocs.io/en/latest/get-starte
 
 This mine can be built with the `./setup.sh` script.  Steps:
 
+1. Install Perl module dependencies: `sudo cpan XML::Parser::PerlSAX Text::Glob Cwd Getopt::Std`
+1. Install and start postgresql on your system
+1. Install tomcat but don't start it, as the build script will handle this for you
 1. Create an `.intermine` directory in your $HOME directory
 1. Copy [biotestmine.properties](https://github.com/intermine/biotestmine/blob/master/data/biotestmine.properties) into the  `~/.intermine` directory
 1. Replace PSQL_USER and PSQL_PWD with your postgres username and password.
