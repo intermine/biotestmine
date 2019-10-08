@@ -38,6 +38,9 @@ fi
 if test -z $DB_ENCODING; then
     DB_ENCODING=SQL_ASCII
 fi
+if test -z $LITE; then
+    LITE=false
+fi
 
 for dep in perl psql createdb; do
   if test -z $(which $dep); then
@@ -70,6 +73,7 @@ if test $DEBUG; then
     echo "#  TOMCAT_USER = $TOMCAT_USER"
     echo "#  TOMCAT_PWD = $TOMCAT_PWD"
     echo "#  DB_ENCODING = $DB_ENCODING"
+    echo "#  LITE = $LITE"
 fi
 
 if test ! -d $IMDIR; then
@@ -108,7 +112,11 @@ else
     cd $HOME
     mkdir $DATA_DIR
     cd $DATA_DIR
-    wget https://github.com/intermine/biotestmine/blob/master/data/malaria-data.tar.gz?raw=true -O malaria-data.tar.gz
+    local dataset=malaria-data.tar.gz
+    if $LITE; then
+      dataset=malaria-light-data.tar.gz
+    fi
+    wget https://github.com/intermine/biotestmine/blob/master/data/$dataset?raw=true -O malaria-data.tar.gz
     echo '#---> Unpacking sample data...'
     tar -zxvf malaria-data.tar.gz 
     rm malaria-data.tar.gz
