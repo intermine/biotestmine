@@ -112,7 +112,7 @@ else
     cd $HOME
     mkdir $DATA_DIR
     cd $DATA_DIR
-    local dataset=malaria-data.tar.gz
+    dataset=malaria-data.tar.gz
     if $LITE; then
       dataset=malaria-light-data.tar.gz
     fi
