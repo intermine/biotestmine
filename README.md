@@ -8,8 +8,8 @@ It's used by the [tutorial](http://intermine.readthedocs.io/en/latest/get-starte
 
 ## Mac OSX note
 1. Install `wget` if it's not already installed.
-  1. Install homebrew if not already installed: https://brew.sh/ 
-  2. `brew install wget`
+    1. Install homebrew if not already installed: https://brew.sh/ 
+    2. `brew install wget`
 
 ## Linux and OSX
 
