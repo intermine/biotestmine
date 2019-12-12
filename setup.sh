@@ -118,7 +118,7 @@ else
     fi
     wget https://github.com/intermine/biotestmine/blob/master/data/$dataset?raw=true -O malaria-data.tar.gz
     echo '#---> Unpacking sample data...'
-    tar -zxvf malaria-data.tar.gz 
+    tar -zxvf malaria-data.tar.gz
     rm malaria-data.tar.gz
 fi
 
@@ -129,7 +129,7 @@ if test ! -f project.xml; then
 fi
 
 echo '#---> Personalising project.xml'
-sed -i '' "s!DATA_DIR!$DATA_DIR!g" project.xml
+sed -i=bak "s!DATA_DIR!$DATA_DIR!g" project.xml && rm project.xml=bak
 
 if egrep -q ProteinDomain.shortName $PRIORITIES; then
     echo '#--- Integration key exists.'
@@ -139,7 +139,7 @@ else
 fi
 
 #echo '#---> Building DB'
-#./gradlew builddb 
+#./gradlew builddb
 
 if test ! -f "project_build"; then
     echo '#---> Copying over the InterMine build script'
@@ -159,4 +159,3 @@ echo '#---> Releasing web-application'
 ./gradlew tomcatStartWar
 
 echo BUILD COMPLETE
-
