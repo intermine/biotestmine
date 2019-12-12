@@ -6,6 +6,13 @@ It's used by the [tutorial](http://intermine.readthedocs.io/en/latest/get-starte
 
 # Building the mine
 
+## Mac OSX note
+1. Install `wget` if it's not already installed.
+  1. Install homebrew if not already installed: https://brew.sh/ 
+  2. `brew install wget`
+
+## Linux and OSX
+
 This mine can be built with the `./setup.sh` script.  Steps:
 
 1. Install Perl module dependencies: `sudo cpan XML::Parser::PerlSAX Text::Glob Cwd Getopt::Std`
