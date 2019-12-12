@@ -129,7 +129,7 @@ if test ! -f project.xml; then
 fi
 
 echo '#---> Personalising project.xml'
-sed -i "s!DATA_DIR!$DATA_DIR!g" project.xml
+sed -i '' "s!DATA_DIR!$DATA_DIR!g" project.xml
 
 if egrep -q ProteinDomain.shortName $PRIORITIES; then
     echo '#--- Integration key exists.'
