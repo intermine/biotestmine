@@ -116,10 +116,8 @@ else
     if $LITE; then
       dataset=malaria-light-data.tar.gz
     fi
-    wget https://github.com/intermine/biotestmine/blob/master/data/$dataset?raw=true -O malaria-data.tar.gz
     echo '#---> Unpacking sample data...'
-    tar -zxvf malaria-data.tar.gz
-    rm malaria-data.tar.gz
+    tar -zxvf $DIR/data/${dataset}
 fi
 
 cd $DIR
