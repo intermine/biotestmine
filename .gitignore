@@ -3,6 +3,7 @@ dist/
 client-dist/
 build/
 client-build/
+webapp/tools/
 *.log
 *.log.*
 .settings
