@@ -154,6 +154,6 @@ echo '#--- Finished loading data.'
 echo '#---> Building userprofile..'
 ./gradlew buildUserDB
 echo '#---> Releasing web-application'
-./gradlew tomcatStartWar
+./gradlew cargoRunLocal
 
 echo BUILD COMPLETE
