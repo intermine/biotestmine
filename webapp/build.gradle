@@ -1,5 +1,4 @@
 apply plugin: "war"
-apply from: "https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin"
 apply plugin: "webapp"
 apply plugin: "com.bmuschko.cargo"
 
@@ -16,6 +15,7 @@ sourceSets {
 
 configurations {
     onlyRunTime
+    tomcat
 }
 
 dependencies {
@@ -25,6 +25,7 @@ dependencies {
     compile group: "org.intermine", name: "intermine-webapp", version: System.getProperty("imVersion"), classifier: "classes"
     compile group: "org.intermine", name: "intermine-webtasks", version: System.getProperty("imVersion")
     onlyRunTime group: 'org.intermine', name: 'bluegenes', version: System.getProperty("blueGenesVersion")
+    tomcat "org.apache.tomcat:tomcat:8.5.31@zip"
 }
 
 def explodedWebAppDir = "$buildDir/explodedWebApp"
@@ -60,11 +61,6 @@ task copyWebappContent(type: Copy) {
 // read in biotestmine.properties to get the contextPath
 def props = new Properties()
 file(minePropertyFile).withInputStream { props.load(it) }
-
-gretty {
-    jvmArgs = ['-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true']
-    contextPath = props.getProperty("webapp.path")
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Use cargo to deploy the webapp to an existing Tomcat instance, either via the HTTP Tomcat manager or local file copy.
@@ -106,6 +102,15 @@ cargo {
         username = props.getProperty("webapp.manager")
         password = props.getProperty("webapp.password")
         port = remotePort
+    }
+
+    local {
+        installer {
+            installConfiguration = configurations.tomcat
+            downloadDir= file("$buildDir/downloads")
+            extractDir = file("$buildDir/extracts")
+        }
+        jvmArgs = '-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true'
     }
 }
 
