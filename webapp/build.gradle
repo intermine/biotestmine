@@ -142,11 +142,8 @@ String getServerName(String deployUrl) {
 task blueGenesStart(type: JavaExec) {
     classpath = configurations.onlyRunTime
     main = "bluegenes.core"
-    //println "Loading blue genes for '" + props.getProperty("project.title") + "' at '" + props.getProperty("webapp.baseurl") + "/" + props.getProperty("webapp.path") + "'"
-
-    //:bluegenes-default-service-root "http://beta.flymine.org/beta"
     environment("bluegenes-default-service-root", props.getProperty("webapp.baseurl") + "/" + props.getProperty("webapp.path"))
-    // FlyMine Beta
+    environment("bluegenes-default-namespace", props.getProperty("webapp.path"))
     environment("bluegenes-default-mine-name", props.getProperty("project.title"))
     environment("bluegenes-jar-version", System.getProperty("blueGenesVersion"))
 }
