@@ -41,8 +41,15 @@ webappConfig {
 }
 
 war {
-    dependsOn 'mergeProperties', 'summariseObjectStore', 'unwarBioWebApp', 'addStrutsConfig'
+    dependsOn 'mergeProperties', 'summariseObjectStore', 'unwarBioWebApp', 'addStrutsConfig', 'declareExplodedWebApp'
     finalizedBy 'warWebApp'
+}
+
+task declareExplodedWebApp() {
+    outputs.dir "$explodedWebAppDir/donotdeleteme"
+	doLast{  
+    	mkdir "$explodedWebAppDir/donotdeleteme"    
+    }
 }
 
 task warWebApp(type: War) {
